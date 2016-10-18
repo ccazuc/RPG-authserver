@@ -65,6 +65,7 @@ public class ConnectionManager {
 	private void readPacket() {
 		while(this.connection != null && this.connection.hasRemaining()) {
 			byte packetId = this.connection.readByte();
+			System.out.println(packetId);
 			if(this.commandList.containsKey((int)packetId)) {
 				this.lastPacketReaded = packetId;
 				this.commandList.get((int)packetId).read();

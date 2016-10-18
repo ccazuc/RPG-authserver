@@ -19,7 +19,7 @@ import net.sql.MyRunnable;
 import net.sql.SQLRequest;
 
 public class Server {
-	private final static int PORT = 5721;
+	private final static int PORT = 5725;
 	private static JDO jdo;
 	private static ServerSocketChannel serverSocketChannel;
 	private static SocketChannel clientSocket;
@@ -30,6 +30,7 @@ public class Server {
 	private static MyRunnable runnable;
 	
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		System.out.println("AUTH SERVER");
 		jdo = new MariaDB("127.0.0.1", 3306, "rpg", "root", "mideas");
 		nonLoggedPlayer = Collections.synchronizedList(nonLoggedPlayer);
 		final InetSocketAddress iNetSocketAdress = new InetSocketAddress(PORT);
@@ -46,6 +47,8 @@ public class Server {
 				clientSocket.configureBlocking(false);
 				if(!serverLogged) {
 					ConnectionManager.setWorldServerSocket(clientSocket);
+					serverLogged = true;
+					System.out.println("World server connected");
 				}
 				else {
 					nonLoggedPlayer.add(new Player(clientSocket));

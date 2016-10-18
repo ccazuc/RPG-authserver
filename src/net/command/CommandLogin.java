@@ -1,4 +1,5 @@
 package net.command;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 import jdo.JDOStatement;
@@ -6,12 +7,13 @@ import net.Server;
 import net.connection.ConnectionManager;
 import net.connection.PacketID;
 import net.sql.SQLRequest;
+import net.utils.Hash;
 
 public class CommandLogin extends Command {
 	
 	static JDOStatement read_statement;
 	private static JDOStatement write_statement;
-	private static SQLRequest loginRequest = new SQLRequest("SELECT name, password, id, rank, banned, ban_duration FROM account WHERE name = ?") {
+	private static SQLRequest loginRequest = new SQLRequest("SELECT name, password, salt, id, rank, banned, ban_duration FROM account WHERE name = ?") {
 		@Override
 		public void gatherData() {
 			try {
@@ -21,6 +23,8 @@ public class CommandLogin extends Command {
 				if(this.statement.fetch()) {
 					String goodUsername = this.statement.getString().toLowerCase();
 					String goodPassword = this.statement.getString();
+					String salt = this.statement.getString();
+					this.password = Hash.hash(this.password, salt);
 					if(goodPassword.equals(this.password) && goodUsername.equals(this.userName.toLowerCase())) {
 						int id = this.statement.getInt();
 						int rank = this.statement.getInt();
@@ -64,6 +68,7 @@ public class CommandLogin extends Command {
 						Server.removeNonLoggedPlayer(this.player);
 						Server.addLoggedPlayer(this.player);
 						ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN);
+						ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN_NEW_KEY);
 						ConnectionManager.worldServerConnection().writeDouble(key);
 						ConnectionManager.worldServerConnection().writeString(this.player.getIpAdresse());
 						ConnectionManager.worldServerConnection().send();
@@ -85,7 +90,7 @@ public class CommandLogin extends Command {
 					return;
 				}
 			}
-			catch(SQLException e) {
+			catch(SQLException | NoSuchAlgorithmException e) {
 			}
 		}
 	};
