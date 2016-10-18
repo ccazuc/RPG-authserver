@@ -8,21 +8,28 @@ import java.util.HashMap;
 
 import net.command.Command;
 import net.command.CommandLogin;
+import net.command.CommandRegisterServer;
 import net.game.Player;
+import net.game.WorldServer;
 
 public class ConnectionManager {
 	
 	private Player player;
+	private WorldServer server;
 	private Connection connection;
 	private HashMap<Integer, Command> commandList = new HashMap<Integer, Command>();
-	private static Connection worldServerConnection;
-	private static SocketChannel worldServerSocket;
 	private byte lastPacketReaded;
 	
 	public ConnectionManager(Player player, SocketChannel socket) {
 		this.player = player;
 		this.connection = new Connection(socket, player);
+		this.commandList.put((int)REGISTER_WORLD_SERVER, new CommandRegisterServer(this));
 		this.commandList.put((int)LOGIN, new CommandLogin(this));
+	}
+	
+	public ConnectionManager(WorldServer server, SocketChannel socket) {
+		this.server = server;
+		this.connection = new Connection(socket, server);
 	}
 	
 	public void read() {
@@ -33,17 +40,10 @@ public class ConnectionManager {
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
-			this.player.close();
+			if(this.player != null) {
+				this.player.close();
+			}
 		}
-	}
-	
-	public static void setWorldServerSocket(SocketChannel socket) {
-		worldServerSocket = socket;
-		worldServerConnection = new Connection(worldServerSocket);
-	}
-	
-	public static Connection worldServerConnection() {
-		return worldServerConnection;
 	}
 	
 	public String getIpAdress() {
@@ -65,7 +65,6 @@ public class ConnectionManager {
 	private void readPacket() {
 		while(this.connection != null && this.connection.hasRemaining()) {
 			byte packetId = this.connection.readByte();
-			System.out.println(packetId);
 			if(this.commandList.containsKey((int)packetId)) {
 				this.lastPacketReaded = packetId;
 				this.commandList.get((int)packetId).read();

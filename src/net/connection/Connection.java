@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 import net.game.Player;
+import net.game.WorldServer;
 
 public class Connection {
 
@@ -17,10 +18,10 @@ public class Connection {
 		this.rBuffer = new Buffer(socket, player);
 	}
 	
-	public Connection(SocketChannel socket) {
+	public Connection(SocketChannel socket, WorldServer server) {
 		this.socket = socket;
-		this.wBuffer = new Buffer(socket);
-		this.rBuffer = new Buffer(socket);
+		this.wBuffer = new Buffer(socket, server);
+		this.rBuffer = new Buffer(socket, server);
 	}
 
 	public final void close() {
@@ -30,6 +31,10 @@ public class Connection {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public SocketChannel getSocket() {
+		return this.socket;
 	}
 	
 	public final String getIpAdress() {

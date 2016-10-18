@@ -10,6 +10,7 @@ public class Player {
 	private ConnectionManager connectionManager;
 	private int accountId;
 	private double authKey;
+	private WorldServer server;
 
 	public Player(SocketChannel socket) {
 		this.connectionManager = new ConnectionManager(this, socket);
@@ -19,6 +20,14 @@ public class Player {
 		this.connectionManager.getConnection().close();
 		Server.removeNonLoggedPlayer(this);
 		Server.removeLoggedPlayer(this);
+	}
+	
+	public WorldServer getServer() {
+		return this.server;
+	}
+	
+	public void setServer(WorldServer server) {
+		this.server = server;
 	}
 	
 	public void setAccountId(int id) {

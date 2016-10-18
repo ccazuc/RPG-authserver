@@ -7,6 +7,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
 import net.game.Player;
+import net.game.WorldServer;
 
 public class Buffer {
 
@@ -14,6 +15,7 @@ public class Buffer {
 	private boolean written;
 	private SocketChannel socket;
 	private Player player;
+	private WorldServer server;
 	
 	public Buffer(SocketChannel socket, Player player) {
 		this.buffer = ByteBuffer.allocateDirect(16000);
@@ -21,9 +23,10 @@ public class Buffer {
 		this.player = player;
 	}
 	
-	public Buffer(SocketChannel socket) {
+	public Buffer(SocketChannel socket, WorldServer server) {
 		this.buffer = ByteBuffer.allocateDirect(16000);
 		this.socket = socket;
+		this.server = server;
 	}
 	
 	protected final void send() throws IOException {

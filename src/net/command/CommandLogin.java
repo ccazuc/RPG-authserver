@@ -67,11 +67,16 @@ public class CommandLogin extends Command {
 						this.player.setAuthKey(key);
 						Server.removeNonLoggedPlayer(this.player);
 						Server.addLoggedPlayer(this.player);
-						ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN);
+						/*this.player.getServer().getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
+						this.player.getServer().getConnectionManager().getConnection().writeByte(PacketID.LOGIN_NEW_KEY);
+						this.player.getServer().getConnectionManager().getConnection().writeDouble(key);
+						this.player.getServer().getConnectionManager().getConnection().writeString(this.player.getIpAdresse());
+						this.player.getServer().getConnectionManager().getConnection().send();*/
+						/*ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN);
 						ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN_NEW_KEY);
 						ConnectionManager.worldServerConnection().writeDouble(key);
 						ConnectionManager.worldServerConnection().writeString(this.player.getIpAdresse());
-						ConnectionManager.worldServerConnection().send();
+						ConnectionManager.worldServerConnection().send();*/
 						return;
 					}
 					else {

@@ -13,8 +13,8 @@ import java.util.Map;
 
 import jdo.JDO;
 import jdo.wrapper.MariaDB;
-import net.connection.ConnectionManager;
 import net.game.Player;
+import net.game.WorldServer;
 import net.sql.MyRunnable;
 import net.sql.SQLRequest;
 
@@ -25,11 +25,13 @@ public class Server {
 	private static SocketChannel clientSocket;
 	private static Map<Integer, Player> playerList = Collections.synchronizedMap(new HashMap<Integer, Player>());
 	private static List<Player> nonLoggedPlayer = Collections.synchronizedList(new ArrayList<Player>());
+	private static HashMap<Integer, WorldServer> realmList = new HashMap<Integer, WorldServer>();
 	private static ArrayList<Integer> playerWaitingForKick = new ArrayList<Integer>();
 	private static Thread sqlRequest;
 	private static MyRunnable runnable;
 	
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		long time = System.currentTimeMillis();
 		System.out.println("AUTH SERVER");
 		jdo = new MariaDB("127.0.0.1", 3306, "rpg", "root", "mideas");
 		nonLoggedPlayer = Collections.synchronizedList(nonLoggedPlayer);
@@ -40,22 +42,15 @@ public class Server {
 		runnable = new MyRunnable();
 		sqlRequest = new Thread(runnable);
 		sqlRequest.start();
-		long time;
-		boolean serverLogged = false;
+		System.out.println("Init took "+(System.currentTimeMillis()-time)+" ms.");
 		while(true) {
 			if((clientSocket = serverSocketChannel.accept()) != null) {
 				clientSocket.configureBlocking(false);
-				if(!serverLogged) {
-					ConnectionManager.setWorldServerSocket(clientSocket);
-					serverLogged = true;
-					System.out.println("World server connected");
-				}
-				else {
-					nonLoggedPlayer.add(new Player(clientSocket));
-				}
+				nonLoggedPlayer.add(new Player(clientSocket));
 			}
 			time = System.currentTimeMillis();
-			read();
+			readRealm();
+			readPlayer();
 			kickPlayers();
 			if((System.currentTimeMillis()-time)/1000d >= 0.05) {
 				System.out.println("Loop too long: "+(System.currentTimeMillis()-time)/1000d);
@@ -76,7 +71,13 @@ public class Server {
 		playerWaitingForKick.clear();
 	}
 	
-	private static void read() {
+	private static void readRealm() {
+		for(WorldServer server : realmList.values()) {
+			server.getConnectionManager().read();
+		}
+	}
+	
+	private static void readPlayer() {
 		int i = 0;
 		synchronized(nonLoggedPlayer) {
 			while(i < nonLoggedPlayer.size()) {
@@ -89,6 +90,14 @@ public class Server {
 				player.getConnectionManager().read();
 			}
 		}
+	}
+	
+	public static void addNewRealm(WorldServer server) {
+		realmList.put(server.getRealmID(), server);
+	}
+	
+	public static WorldServer getRealm(int id) {
+		return realmList.get(id);
 	}
 	
 	public static Map<Integer, Player> getPlayerList() {
@@ -134,5 +143,13 @@ public class Server {
 		if(player != null) {
 			playerWaitingForKick.add(player.getAccountId());
 		}
+	}
+	
+	public static void kickPlayer(int id) {
+		playerWaitingForKick.add(id);
+	}
+	
+	public static HashMap<Integer, WorldServer> getRealmList() {
+		return realmList;
 	}
 }
