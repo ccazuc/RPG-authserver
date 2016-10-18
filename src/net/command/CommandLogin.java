@@ -56,17 +56,16 @@ public class CommandLogin extends Command {
 							this.player.close();
 							return;
 						}
-						double key = Math.random();
 						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
 						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_ACCEPT);
 						this.player.getConnectionManager().getConnection().writeInt(id);
-						this.player.getConnectionManager().getConnection().writeDouble(key);
 						//this.player.getConnectionManager().getConnection().writeInt(rank);
 						this.player.getConnectionManager().getConnection().send();
 						this.player.setAccountId(id);
-						this.player.setAuthKey(key);
+						CommandSendRealmList.sendRealmList(this.player);
 						Server.removeNonLoggedPlayer(this.player);
 						Server.addLoggedPlayer(this.player);
+						System.out.println("LOGIN:LOGIN_ACCEPT");
 						/*this.player.getServer().getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
 						this.player.getServer().getConnectionManager().getConnection().writeByte(PacketID.LOGIN_NEW_KEY);
 						this.player.getServer().getConnectionManager().getConnection().writeDouble(key);
