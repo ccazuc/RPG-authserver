@@ -2,6 +2,7 @@ package net.game;
 
 import java.nio.channels.SocketChannel;
 
+import net.Server;
 import net.connection.ConnectionManager;
 
 public class WorldServer {
@@ -18,6 +19,11 @@ public class WorldServer {
 	
 	public ConnectionManager getConnectionManager() {
 		return this.connectionManager;
+	}
+	
+	public void close() {
+		this.connectionManager.getConnection().close();
+		Server.removeServer(this.realmId);;
 	}
 	
 	public int getRealmID() {

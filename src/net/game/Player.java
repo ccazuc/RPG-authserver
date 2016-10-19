@@ -50,7 +50,7 @@ public class Player {
 		return this.connectionManager;
 	}
 	
-	public String getIpAdresse() {
+	public String getIpAdress() {
 		return this.connectionManager.getIpAdress();
 	}
 }

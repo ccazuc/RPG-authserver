@@ -9,6 +9,7 @@ import java.util.HashMap;
 import net.command.Command;
 import net.command.CommandLogin;
 import net.command.CommandLoginRealm;
+import net.command.CommandLogout;
 import net.command.CommandRegisterServer;
 import net.game.Player;
 import net.game.WorldServer;
@@ -26,6 +27,7 @@ public class ConnectionManager {
 		this.connection = new Connection(socket, player);
 		this.commandList.put((int)REGISTER_WORLD_SERVER, new CommandRegisterServer(this));
 		this.commandList.put((int)LOGIN, new CommandLogin(this));
+		this.commandList.put((int)LOGOUT, new CommandLogout(this));
 		this.commandList.put((int)LOGIN_REALM, new CommandLoginRealm(this));
 	}
 	
@@ -44,6 +46,9 @@ public class ConnectionManager {
 			e.printStackTrace();
 			if(this.player != null) {
 				this.player.close();
+			}
+			if(this.server != null) {
+				this.server.close();
 			}
 		}
 	}

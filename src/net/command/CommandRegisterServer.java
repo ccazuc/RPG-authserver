@@ -15,8 +15,8 @@ public class CommandRegisterServer extends Command {
 		String realmName = this.connection.readString();
 		int realmID = this.connection.readInt();
 		int port = this.connection.readInt();
-		System.out.println(this.player.getIpAdresse()+" "+realmName+" "+realmID);
-		if(this.player.getIpAdresse().equals("/127.0.0.1")) {
+		System.out.println(this.player.getIpAdress()+" "+realmName+" "+realmID);
+		if(this.player.getIpAdress().equals("/127.0.0.1")) {
 			Server.addNewRealm(new WorldServer(this.player.getConnectionManager().getConnection().getSocket(), realmID));
 			Server.getRealm(realmID).setPort(port);
 			Server.getRealm(realmID).setRealmName(realmName);

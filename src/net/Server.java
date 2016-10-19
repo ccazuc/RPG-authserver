@@ -123,6 +123,10 @@ public class Server {
 		return null;
 	}
 	
+	public static void removeServer(int id) {
+		realmList.remove(id);
+	}
+	
 	public static void removeNonLoggedPlayer(Player player) {
 		if(player != null) {
 			synchronized(nonLoggedPlayer) {
