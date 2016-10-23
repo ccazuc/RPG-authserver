@@ -1,7 +1,7 @@
 package net.connection;
 
 public class PacketID {
-	
+
 	public static final byte LOGIN = 1;
 	public static final byte LOGOUT = 2;
 	public static final byte ALREADY_LOGGED = 3;
@@ -82,4 +82,8 @@ public class PacketID {
 	public static final byte LOGIN_REALM_ACCEPTED = 78;
 	public static final byte LOGIN_REALM_REQUEST = 79;
 	public static final byte LOGIN_REALM_SUCCESS = 80;
+	public static final byte FRIEND_OFFLINE = 81;
+	public static final byte FRIEND_ONLINE = 82;
+	public static final byte FRIEND_REMOVE = 83;
+	public static final byte PLAYER_NOT_FOUND = 84;
 }
