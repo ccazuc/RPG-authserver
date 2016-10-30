@@ -78,21 +78,17 @@ public class CommandLogin extends Command {
 						ConnectionManager.worldServerConnection().send();*/
 						return;
 					}
-					else {
-						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_WRONG);
-						this.player.getConnectionManager().getConnection().send();
-						this.player.close();
-						return;
-					}
-				}
-				else {
 					this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
 					this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_WRONG);
 					this.player.getConnectionManager().getConnection().send();
 					this.player.close();
 					return;
 				}
+				this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
+				this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_WRONG);
+				this.player.getConnectionManager().getConnection().send();
+				this.player.close();
+				return;
 			}
 			catch(SQLException | NoSuchAlgorithmException e) {
 			}
