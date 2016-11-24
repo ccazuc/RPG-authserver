@@ -6,7 +6,7 @@ import jdo.JDOStatement;
 import net.Server;
 import net.connection.ConnectionManager;
 import net.connection.PacketID;
-import net.sql.SQLRequest;
+import net.thread.sql.SQLRequest;
 import net.utils.Hash;
 
 public class CommandLogin extends Command {

@@ -42,7 +42,7 @@ public class ConnectionManager {
 				readPacket();
 			}
 		} 
-		catch (IOException e) {
+		catch (IOException e ) {
 			e.printStackTrace();
 			if(this.player != null) {
 				this.player.close();

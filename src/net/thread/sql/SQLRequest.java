@@ -1,4 +1,4 @@
-package net.sql;
+package net.thread.sql;
 
 import java.sql.SQLException;
 

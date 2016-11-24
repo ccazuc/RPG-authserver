@@ -20,6 +20,7 @@ public class Player {
 		this.connectionManager.getConnection().close();
 		Server.removeNonLoggedPlayer(this);
 		Server.removeLoggedPlayer(this);
+		System.out.println("Removed logged player");
 	}
 	
 	public WorldServer getServer() {

@@ -3,7 +3,6 @@ package net;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,60 +14,76 @@ import jdo.JDO;
 import jdo.wrapper.MariaDB;
 import net.game.Player;
 import net.game.WorldServer;
-import net.sql.MyRunnable;
-import net.sql.SQLRequest;
+import net.thread.socket.SocketRunnable;
+import net.thread.sql.SQLRunnable;
+import net.thread.sql.SQLRequest;
 
 public class Server {
-	private final static int PORT = 5725;
 	private static JDO jdo;
 	private static ServerSocketChannel serverSocketChannel;
-	private static SocketChannel clientSocket;
+	//private static SocketChannel clientSocket;
 	private static Map<Integer, Player> playerList = Collections.synchronizedMap(new HashMap<Integer, Player>());
 	private static List<Player> nonLoggedPlayer = Collections.synchronizedList(new ArrayList<Player>());
 	private static HashMap<Integer, WorldServer> realmList = new HashMap<Integer, WorldServer>();
 	private static ArrayList<Integer> playerWaitingForKick = new ArrayList<Integer>();
 	private static Thread sqlRequest;
-	private static MyRunnable runnable;
+	private static SQLRunnable SQLRunnable;
+	private static Thread socketThread;
+	private static SocketRunnable socketRunnable;
+
+	private final static int PORT = 5725;
+	private final static int LOOP_TIMER = 25;
 	
-	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InterruptedException {
 		long time = System.currentTimeMillis();
+		float delta;
 		System.out.println("AUTH SERVER");
 		jdo = new MariaDB("127.0.0.1", 3306, "rpg", "root", "mideas");
 		nonLoggedPlayer = Collections.synchronizedList(nonLoggedPlayer);
 		final InetSocketAddress iNetSocketAdress = new InetSocketAddress(PORT);
 		serverSocketChannel = ServerSocketChannel.open();
-		serverSocketChannel.configureBlocking(false);
+		//serverSocketChannel.configureBlocking(false);
 		serverSocketChannel.bind(iNetSocketAdress);
-		runnable = new MyRunnable();
-		sqlRequest = new Thread(runnable);
+		SQLRunnable = new SQLRunnable();
+		sqlRequest = new Thread(SQLRunnable);
+		socketRunnable = new SocketRunnable(serverSocketChannel);
+		socketThread = new Thread(socketRunnable);
+		socketThread.start();
 		sqlRequest.start();
+		
 		System.out.println("Init took "+(System.currentTimeMillis()-time)+" ms.");
 		while(true) {
-			if((clientSocket = serverSocketChannel.accept()) != null) {
+			/*if((clientSocket = serverSocketChannel.accept()) != null) {
 				clientSocket.configureBlocking(false);
 				nonLoggedPlayer.add(new Player(clientSocket));
-			}
+			}*/
 			time = System.currentTimeMillis();
 			readRealm();
 			readPlayer();
 			kickPlayers();
-			if((System.currentTimeMillis()-time)/1000d >= 0.05) {
-				System.out.println("Loop too long: "+(System.currentTimeMillis()-time)/1000d);
+			delta = System.currentTimeMillis()-time;
+			if(delta < LOOP_TIMER) {
+				Thread.sleep(LOOP_TIMER-(long)delta);
+			}
+			else {
+				System.out.println("Loop too long: "+(System.currentTimeMillis()-time));
 			}
 		}
 	}
 	
 	public static void addNewRequest(SQLRequest request) {
-		runnable.addRequest(request);
+		SQLRunnable.addRequest(request);
 	}
 	
 	private static void kickPlayers() {
 		int i = 0;
-		while(i < playerWaitingForKick.size()) {
-			playerList.remove(playerWaitingForKick.get(i));
-			i++;
+		if(playerWaitingForKick.size() > 0) {
+			while(i < playerWaitingForKick.size()) {
+				playerList.remove(playerWaitingForKick.get(i));
+				i++;
+			}
+			playerWaitingForKick.clear();
 		}
-		playerWaitingForKick.clear();
 	}
 	
 	private static void readRealm() {
@@ -132,6 +147,12 @@ public class Server {
 			synchronized(nonLoggedPlayer) {
 				nonLoggedPlayer.remove(player);
 			}
+		}
+	}
+	
+	public static void addNonLoggedPlayer(Player player) {
+		synchronized(nonLoggedPlayer) {
+			nonLoggedPlayer.add(player);
 		}
 	}
 	
