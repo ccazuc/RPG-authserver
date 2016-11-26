@@ -43,13 +43,13 @@ public class Server {
 		final InetSocketAddress iNetSocketAdress = new InetSocketAddress(PORT);
 		serverSocketChannel = ServerSocketChannel.open();
 		//serverSocketChannel.configureBlocking(false);
-		serverSocketChannel.bind(iNetSocketAdress);
+		serverSocketChannel.bind(iNetSocketAdress, 100);
 		SQLRunnable = new SQLRunnable();
 		sqlRequest = new Thread(SQLRunnable);
+		sqlRequest.start();
 		socketRunnable = new SocketRunnable(serverSocketChannel);
 		socketThread = new Thread(socketRunnable);
 		socketThread.start();
-		sqlRequest.start();
 		
 		System.out.println("Init took "+(System.currentTimeMillis()-time)+" ms.");
 		while(true) {
@@ -65,7 +65,7 @@ public class Server {
 			if(delta < LOOP_TIMER) {
 				Thread.sleep(LOOP_TIMER-(long)delta);
 			}
-			else {
+			if(delta > 2) {
 				System.out.println("Loop too long: "+(System.currentTimeMillis()-time));
 			}
 		}
