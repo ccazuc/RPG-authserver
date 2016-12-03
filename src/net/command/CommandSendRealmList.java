@@ -11,6 +11,11 @@ public class CommandSendRealmList extends Command {
 	public CommandSendRealmList(ConnectionManager connectionManager) {
 		super(connectionManager);
 	}
+	
+	@Override
+	public void read() {
+		sendRealmList(this.player);
+	}
 
 	public static void sendRealmList(Player player) {
 		player.getConnectionManager().getConnection().writeByte(PacketID.SEND_REALM_LIST);

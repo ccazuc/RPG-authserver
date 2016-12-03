@@ -11,6 +11,7 @@ import net.command.CommandLogin;
 import net.command.CommandLoginRealm;
 import net.command.CommandLogout;
 import net.command.CommandRegisterServer;
+import net.command.CommandSendRealmList;
 import net.game.Player;
 import net.game.WorldServer;
 
@@ -29,6 +30,7 @@ public class ConnectionManager {
 		this.commandList.put((int)LOGIN, new CommandLogin(this));
 		this.commandList.put((int)LOGOUT, new CommandLogout(this));
 		this.commandList.put((int)LOGIN_REALM, new CommandLoginRealm(this));
+		this.commandList.put((int)SEND_REALM_LIST, new CommandSendRealmList(this));
 	}
 	
 	public ConnectionManager(WorldServer server, SocketChannel socket) {
