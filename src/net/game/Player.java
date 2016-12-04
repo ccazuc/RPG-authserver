@@ -9,6 +9,7 @@ public class Player {
 	
 	private ConnectionManager connectionManager;
 	private int accountId;
+	private int accountRank;
 	private double authKey;
 	private WorldServer server;
 
@@ -45,6 +46,14 @@ public class Player {
 	
 	public int getAccountId() {
 		return this.accountId;
+	}
+	
+	public void setAccountRank(int rank) {
+		this.accountRank = rank;
+	}
+	
+	public int getAccountRank() {
+		return this.accountRank;
 	}
 	
 	public ConnectionManager getConnectionManager() {

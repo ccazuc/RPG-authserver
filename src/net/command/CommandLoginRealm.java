@@ -19,6 +19,7 @@ public class CommandLoginRealm extends Command {
 			Server.getRealm(id).getConnectionManager().getConnection().writeByte(PacketID.LOGIN_NEW_KEY);
 			Server.getRealm(id).getConnectionManager().getConnection().writeDouble(key);
 			Server.getRealm(id).getConnectionManager().getConnection().writeInt(this.player.getAccountId());
+			Server.getRealm(id).getConnectionManager().getConnection().writeInt(this.player.getAccountRank());
 			Server.getRealm(id).getConnectionManager().getConnection().send();
 			this.connection.writeByte(PacketID.LOGIN);
 			this.connection.writeByte(PacketID.LOGIN_REALM_ACCEPTED);
