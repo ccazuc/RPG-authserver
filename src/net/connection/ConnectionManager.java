@@ -10,6 +10,7 @@ import net.command.Command;
 import net.command.CommandLogin;
 import net.command.CommandLoginRealm;
 import net.command.CommandLogout;
+import net.command.CommandPlayerLoggedOnWorldServer;
 import net.command.CommandRegisterServer;
 import net.command.CommandSendRealmList;
 import net.game.Player;
@@ -36,6 +37,12 @@ public class ConnectionManager {
 	public ConnectionManager(WorldServer server, SocketChannel socket) {
 		this.server = server;
 		this.connection = new Connection(socket, server);
+		this.commandList.put((int)REGISTER_WORLD_SERVER, new CommandRegisterServer(this));
+		this.commandList.put((int)LOGIN, new CommandLogin(this));
+		this.commandList.put((int)LOGOUT, new CommandLogout(this));
+		this.commandList.put((int)LOGIN_REALM, new CommandLoginRealm(this));
+		this.commandList.put((int)SEND_REALM_LIST, new CommandSendRealmList(this));
+		this.commandList.put((int)PLAYER_LOGGED_WORLD_SERVER, new CommandPlayerLoggedOnWorldServer(this));
 	}
 	
 	public void read() {
@@ -67,6 +74,10 @@ public class ConnectionManager {
 		return this.player;
 	}
 	
+	public WorldServer getWorldServer() {
+		return this.server;
+	}
+	
 	public HashMap<Integer, Command> getCommandList() {
 		return this.commandList;
 	}
@@ -79,7 +90,12 @@ public class ConnectionManager {
 				this.commandList.get((int)packetId).read();
 			}
 			else {
-				System.out.println("Unknown packet: "+(int)packetId+", last packet readed: "+this.lastPacketReaded+" for player "+this.player.getAccountId());
+				if(this.player != null) {
+					System.out.println("Unknown packet: "+(int)packetId+", last packet readed: "+this.lastPacketReaded+" for player "+this.player.getAccountId());
+				}
+				else if(this.server != null) {
+					System.out.println("Unknown packet: "+(int)packetId+", last packet readed: "+this.lastPacketReaded+" for server "+this.server.getRealmID());
+				}
 			}
 		}
 	}

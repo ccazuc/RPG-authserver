@@ -5,7 +5,7 @@ import net.connection.ConnectionManager;
 public class CommandLogout extends Command {
 	
 	public CommandLogout(ConnectionManager connectionManager) {
-	super(connectionManager);
+		super(connectionManager);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ public class Player {
 	private int accountRank;
 	private double authKey;
 	private WorldServer server;
+	private boolean isLoggedOnWorldServer;
 
 	public Player(SocketChannel socket) {
 		this.connectionManager = new ConnectionManager(this, socket);
@@ -26,6 +27,14 @@ public class Player {
 	
 	public WorldServer getServer() {
 		return this.server;
+	}
+	
+	public void setIsLoggedOnWorldServe(boolean we) {
+		this.isLoggedOnWorldServer = we;
+	}
+	
+	public boolean isLoggedOnWorldServer() {
+		return this.isLoggedOnWorldServer;
 	}
 	
 	public void setServer(WorldServer server) {

@@ -26,8 +26,8 @@ public class CommandLogin extends Command {
 					String salt = this.statement.getString();
 					this.password = Hash.hash(this.password, salt);
 					if(!(goodPassword.equals(this.password) && goodUsername.equals(this.userName.toLowerCase()))) {
-						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_WRONG);
+						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_WRONG);
 						this.player.getConnectionManager().getConnection().send();
 						this.player.close();
 						return;
@@ -38,15 +38,15 @@ public class CommandLogin extends Command {
 					int banDuration = this.statement.getInt();
 					if(ban == 1) {
 						if(banDuration > System.currentTimeMillis()) {
-							this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-							this.player.getConnectionManager().getConnection().writeByte(PacketID.ACCOUNT_BANNED_TEMP);
+							this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+							this.player.getConnectionManager().getConnection().writeShort(PacketID.ACCOUNT_BANNED_TEMP);
 							this.player.getConnectionManager().getConnection().send();
 							this.player.close();
 							return;
 						}
 						if(banDuration == -1) {
-							this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-							this.player.getConnectionManager().getConnection().writeByte(PacketID.ACCOUNT_BANNED_PERM);
+							this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+							this.player.getConnectionManager().getConnection().writeShort(PacketID.ACCOUNT_BANNED_PERM);
 							this.player.getConnectionManager().getConnection().send();
 							this.player.close();
 							return;
@@ -56,14 +56,14 @@ public class CommandLogin extends Command {
 						updateBan(id, ban, banDuration);
 					}
 					if(Server.getPlayerList().containsKey(id)) {
-						this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-						this.player.getConnectionManager().getConnection().writeByte(PacketID.ALREADY_LOGGED);
+						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+						this.player.getConnectionManager().getConnection().writeShort(PacketID.ALREADY_LOGGED);
 						this.player.getConnectionManager().getConnection().send();
 						this.player.close();
 						return;
 					}
-					this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-					this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_ACCEPT);
+					this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+					this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_ACCEPT);
 					this.player.getConnectionManager().getConnection().writeInt(id);
 					//this.player.getConnectionManager().getConnection().writeInt(rank);
 					this.player.getConnectionManager().getConnection().send();
@@ -73,20 +73,20 @@ public class CommandLogin extends Command {
 					Server.removeNonLoggedPlayer(this.player);
 					Server.addLoggedPlayer(this.player);
 					System.out.println("LOGIN:LOGIN_ACCEPT");
-					/*this.player.getServer().getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-					this.player.getServer().getConnectionManager().getConnection().writeByte(PacketID.LOGIN_NEW_KEY);
+					/*this.player.getServer().getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+					this.player.getServer().getConnectionManager().getConnection().writeShort(PacketID.LOGIN_NEW_KEY);
 					this.player.getServer().getConnectionManager().getConnection().writeDouble(key);
 					this.player.getServer().getConnectionManager().getConnection().writeString(this.player.getIpAdresse());
 					this.player.getServer().getConnectionManager().getConnection().send();*/
-					/*ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN);
-					ConnectionManager.worldServerConnection().writeByte(PacketID.LOGIN_NEW_KEY);
+					/*ConnectionManager.worldServerConnection().writeShort(PacketID.LOGIN);
+					ConnectionManager.worldServerConnection().writeShort(PacketID.LOGIN_NEW_KEY);
 					ConnectionManager.worldServerConnection().writeDouble(key);
 					ConnectionManager.worldServerConnection().writeString(this.player.getIpAdresse());
 					ConnectionManager.worldServerConnection().send();*/
 					return;
 				}
-				this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN);
-				this.player.getConnectionManager().getConnection().writeByte(PacketID.LOGIN_WRONG);
+				this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
+				this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_WRONG);
 				this.player.getConnectionManager().getConnection().send();
 				this.player.close();
 				return;

@@ -50,13 +50,8 @@ public class Server {
 		socketRunnable = new SocketRunnable(serverSocketChannel);
 		socketThread = new Thread(socketRunnable);
 		socketThread.start();
-		
 		System.out.println("Init took "+(System.currentTimeMillis()-time)+" ms.");
 		while(true) {
-			/*if((clientSocket = serverSocketChannel.accept()) != null) {
-				clientSocket.configureBlocking(false);
-				nonLoggedPlayer.add(new Player(clientSocket));
-			}*/
 			time = System.currentTimeMillis();
 			readRealm();
 			readPlayer();
@@ -66,7 +61,7 @@ public class Server {
 				Thread.sleep(LOOP_TIMER-(long)delta);
 			}
 			if(delta > 2) {
-				System.out.println("Loop too long: "+(System.currentTimeMillis()-time));
+				System.out.println("Loop too long: "+delta);
 			}
 		}
 	}
