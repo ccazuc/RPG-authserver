@@ -65,6 +65,7 @@ public class CommandLogin extends Command {
 					this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 					this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_ACCEPT);
 					this.player.getConnectionManager().getConnection().writeInt(id);
+					this.player.getConnectionManager().getConnection().writeString(goodUsername.toUpperCase());
 					//this.player.getConnectionManager().getConnection().writeInt(rank);
 					this.player.getConnectionManager().getConnection().send();
 					this.player.setAccountId(id);

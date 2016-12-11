@@ -22,7 +22,7 @@ public class ConnectionManager {
 	private WorldServer server;
 	private Connection connection;
 	private HashMap<Integer, Command> commandList = new HashMap<Integer, Command>();
-	private byte lastPacketReaded;
+	private short lastPacketReaded;
 	
 	public ConnectionManager(Player player, SocketChannel socket) {
 		this.player = player;
@@ -84,7 +84,7 @@ public class ConnectionManager {
 	
 	private void readPacket() {
 		while(this.connection != null && this.connection.hasRemaining()) {
-			byte packetId = this.connection.readByte();
+			short packetId = this.connection.readShort();
 			if(this.commandList.containsKey((int)packetId)) {
 				this.lastPacketReaded = packetId;
 				this.commandList.get((int)packetId).read();
