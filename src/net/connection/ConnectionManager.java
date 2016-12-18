@@ -49,7 +49,6 @@ public class ConnectionManager {
 		try {
 			if(this.connection.read() == 1) {
 				readPacket();
-				System.out.println("Read");
 			}
 		} 
 		catch (IOException e ) {

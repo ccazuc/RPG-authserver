@@ -53,16 +53,11 @@ public class Buffer {
 		return read(this.buffer);
 	}
 	
-	private final byte read(final ByteBuffer buffer) {
+	private final byte read(final ByteBuffer buffer) throws IOException {
 		buffer.clear();
-		try {
-			if(this.socket.read(buffer) >= 1) {
-				buffer.flip();
-				return 1;
-			}
-		}
-		catch(IOException e) {
-			buffer.clear();
+		if(this.socket.read(buffer) >= 1) {
+			buffer.flip();
+			return 1;
 		}
 		return 2;
 	}
