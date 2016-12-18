@@ -27,6 +27,7 @@ public class Connection {
 	public final void close() {
 		try {
 			this.socket.close();
+			this.socket = null;
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
@@ -38,7 +39,7 @@ public class Connection {
 	}
 	
 	public final String getIpAdress() {
-		return this.socket.socket().getInetAddress().toString();
+		return this.socket.socket().getInetAddress().getHostAddress();
 	}
 	
 	public final void clearRBuffer() {

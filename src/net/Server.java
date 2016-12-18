@@ -53,9 +53,9 @@ public class Server {
 		System.out.println("Init took "+(System.currentTimeMillis()-time)+" ms.");
 		while(true) {
 			time = System.currentTimeMillis();
+			kickPlayers();
 			readRealm();
 			readPlayer();
-			kickPlayers();
 			delta = System.currentTimeMillis()-time;
 			if(delta < LOOP_TIMER) {
 				Thread.sleep(LOOP_TIMER-(long)delta);
@@ -72,12 +72,9 @@ public class Server {
 	
 	private static void kickPlayers() {
 		int i = 0;
-		if(playerWaitingForKick.size() > 0) {
-			while(i < playerWaitingForKick.size()) {
-				playerList.remove(playerWaitingForKick.get(i));
-				i++;
-			}
-			playerWaitingForKick.clear();
+		while(i < playerWaitingForKick.size()) {
+			playerList.remove(playerWaitingForKick.get(i));
+			playerWaitingForKick.remove(i);
 		}
 	}
 	

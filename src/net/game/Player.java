@@ -11,6 +11,7 @@ public class Player {
 	private int accountId;
 	private int accountRank;
 	private double authKey;
+	private String accountName;
 	private WorldServer server;
 	private boolean isLoggedOnWorldServer;
 
@@ -27,6 +28,14 @@ public class Player {
 	
 	public WorldServer getServer() {
 		return this.server;
+	}
+	
+	public void setAccountName(String name) {
+		this.accountName = name;
+	}
+	
+	public String getAccountName() {
+		return this.accountName;
 	}
 	
 	public void setIsLoggedOnWorldServe(boolean we) {

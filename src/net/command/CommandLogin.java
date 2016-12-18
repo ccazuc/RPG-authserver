@@ -11,9 +11,9 @@ import net.utils.Hash;
 
 public class CommandLogin extends Command {
 	
-	static JDOStatement read_statement;
-	private static JDOStatement write_statement;
-	private static SQLRequest loginRequest = new SQLRequest("SELECT name, password, salt, id, rank, banned, ban_duration FROM account WHERE name = ?") {
+	private static JDOStatement selectBan;
+	private static JDOStatement removeBan;
+	private static SQLRequest loginRequest = new SQLRequest("SELECT name, password, salt, id, rank FROM account WHERE name = ?") {
 		@Override
 		public void gatherData() {
 			try {
@@ -34,26 +34,31 @@ public class CommandLogin extends Command {
 					}
 					int id = this.statement.getInt();
 					int rank = this.statement.getInt();
-					int ban = this.statement.getInt();
-					int banDuration = this.statement.getInt();
-					if(ban == 1) {
-						if(banDuration > System.currentTimeMillis()) {
+					if(selectBan == null) {
+						selectBan = Server.getJDO().prepare("SELECT unban_date FROM account_banned WHERE account_id = ?");
+					}
+					selectBan.clear();
+					selectBan.putInt(id);
+					selectBan.execute();
+					if(selectBan.fetch()) {
+						long unbanDate = selectBan.getLong();
+						if(unbanDate > System.currentTimeMillis()) {
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.ACCOUNT_BANNED_TEMP);
 							this.player.getConnectionManager().getConnection().send();
 							this.player.close();
 							return;
 						}
-						if(banDuration == -1) {
+						if(unbanDate == -1) {
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.ACCOUNT_BANNED_PERM);
 							this.player.getConnectionManager().getConnection().send();
 							this.player.close();
 							return;
 						}
-					}
-					if((ban == 0 && banDuration > 0) || (ban == 1 && banDuration < System.currentTimeMillis())) {
-						updateBan(id, ban, banDuration);
+						if(unbanDate <= System.currentTimeMillis()) {
+							removeBan(id);
+						}
 					}
 					if(Server.getPlayerList().containsKey(id)) {
 						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
@@ -70,20 +75,11 @@ public class CommandLogin extends Command {
 					this.player.getConnectionManager().getConnection().send();
 					this.player.setAccountId(id);
 					this.player.setAccountRank(rank);
+					this.player.setAccountName(this.userName);
 					CommandSendRealmList.sendRealmList(this.player);
 					Server.removeNonLoggedPlayer(this.player);
 					Server.addLoggedPlayer(this.player);
 					System.out.println("LOGIN:LOGIN_ACCEPT");
-					/*this.player.getServer().getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
-					this.player.getServer().getConnectionManager().getConnection().writeShort(PacketID.LOGIN_NEW_KEY);
-					this.player.getServer().getConnectionManager().getConnection().writeDouble(key);
-					this.player.getServer().getConnectionManager().getConnection().writeString(this.player.getIpAdresse());
-					this.player.getServer().getConnectionManager().getConnection().send();*/
-					/*ConnectionManager.worldServerConnection().writeShort(PacketID.LOGIN);
-					ConnectionManager.worldServerConnection().writeShort(PacketID.LOGIN_NEW_KEY);
-					ConnectionManager.worldServerConnection().writeDouble(key);
-					ConnectionManager.worldServerConnection().writeString(this.player.getIpAdresse());
-					ConnectionManager.worldServerConnection().send();*/
 					return;
 				}
 				this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
@@ -110,31 +106,12 @@ public class CommandLogin extends Command {
 		Server.addNewRequest(loginRequest);
 	}
 	
-	static void updateBan(int id, int ban, int banDuration) throws SQLException {
-		if(write_statement == null) {
-			write_statement = Server.getJDO().prepare("UPDATE banned, ban_duration FROM acount WHERE id = ?");
+	static void removeBan(int accountId) throws SQLException {
+		if(removeBan == null) {
+			removeBan = Server.getJDO().prepare("DELETE FROM account_banned WHERE id = ?");
 		}
-		write_statement.clear();
-		write_statement.putInt(id);
-		write_statement.execute();
-		if(ban == 0) {
-			if(banDuration > System.currentTimeMillis()) {
-				write_statement.putInt(1);
-				write_statement.putInt(banDuration);
-			}
-			else {
-				write_statement.putInt(0);
-				write_statement.putInt(0);
-			}
-		}
-		else if(ban == 1) {
-			if(banDuration > System.currentTimeMillis()) {
-				write_statement.close();
-			}
-			else {
-				write_statement.putInt(0);
-				write_statement.putInt(0);
-			}
-		}
+		removeBan.clear();
+		removeBan.putInt(accountId);
+		removeBan.execute();
 	}
 }
