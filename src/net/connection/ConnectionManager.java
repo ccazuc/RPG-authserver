@@ -84,6 +84,11 @@ public class ConnectionManager {
 	
 	private void readPacket() {
 		while(this.connection != null && this.connection.hasRemaining()) {
+			int packetLength = this.connection.readInt();
+			if(this.connection.rBufferRemaining()+4 < packetLength) {
+				this.connection.rBufferSetPosition(this.connection.rBufferPosition()-4);
+				return;
+			}
 			short packetId = this.connection.readShort();
 			if(this.commandList.containsKey((int)packetId)) {
 				this.lastPacketReaded = packetId;

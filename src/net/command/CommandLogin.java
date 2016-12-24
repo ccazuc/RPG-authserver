@@ -11,7 +11,7 @@ import net.utils.Hash;
 
 public class CommandLogin extends Command {
 	
-	private static JDOStatement selectBan;
+	static JDOStatement selectBan;
 	private static JDOStatement removeBan;
 	private static SQLRequest loginRequest = new SQLRequest("SELECT name, password, salt, id, rank FROM account WHERE name = ?") {
 		@Override
@@ -26,8 +26,10 @@ public class CommandLogin extends Command {
 					String salt = this.statement.getString();
 					this.password = Hash.hash(this.password, salt);
 					if(!(goodPassword.equals(this.password) && goodUsername.equals(this.userName.toLowerCase()))) {
+						this.player.getConnectionManager().getConnection().startPacket();
 						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_WRONG);
+						this.player.getConnectionManager().getConnection().endPacket();
 						this.player.getConnectionManager().getConnection().send();
 						this.player.close();
 						return;
@@ -43,15 +45,19 @@ public class CommandLogin extends Command {
 					if(selectBan.fetch()) {
 						long unbanDate = selectBan.getLong();
 						if(unbanDate > System.currentTimeMillis()) {
+							this.player.getConnectionManager().getConnection().startPacket();
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.ACCOUNT_BANNED_TEMP);
+							this.player.getConnectionManager().getConnection().endPacket();
 							this.player.getConnectionManager().getConnection().send();
 							this.player.close();
 							return;
 						}
 						if(unbanDate == -1) {
+							this.player.getConnectionManager().getConnection().startPacket();
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 							this.player.getConnectionManager().getConnection().writeShort(PacketID.ACCOUNT_BANNED_PERM);
+							this.player.getConnectionManager().getConnection().endPacket();
 							this.player.getConnectionManager().getConnection().send();
 							this.player.close();
 							return;
@@ -61,17 +67,21 @@ public class CommandLogin extends Command {
 						}
 					}
 					if(Server.getPlayerList().containsKey(id)) {
+						this.player.getConnectionManager().getConnection().startPacket();
 						this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 						this.player.getConnectionManager().getConnection().writeShort(PacketID.ALREADY_LOGGED);
+						this.player.getConnectionManager().getConnection().endPacket();
 						this.player.getConnectionManager().getConnection().send();
 						this.player.close();
 						return;
 					}
+					this.player.getConnectionManager().getConnection().startPacket();
 					this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 					this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_ACCEPT);
 					this.player.getConnectionManager().getConnection().writeInt(id);
 					this.player.getConnectionManager().getConnection().writeString(goodUsername.toUpperCase());
 					//this.player.getConnectionManager().getConnection().writeInt(rank);
+					this.player.getConnectionManager().getConnection().endPacket();
 					this.player.getConnectionManager().getConnection().send();
 					this.player.setAccountId(id);
 					this.player.setAccountRank(rank);
@@ -82,8 +92,10 @@ public class CommandLogin extends Command {
 					System.out.println("LOGIN:LOGIN_ACCEPT");
 					return;
 				}
+				this.player.getConnectionManager().getConnection().startPacket();
 				this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 				this.player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN_WRONG);
+				this.player.getConnectionManager().getConnection().endPacket();
 				this.player.getConnectionManager().getConnection().send();
 				this.player.close();
 				return;

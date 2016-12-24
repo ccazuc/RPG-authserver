@@ -65,6 +65,18 @@ public class Buffer {
 	protected final boolean hasRemaining() {
 		return this.buffer.hasRemaining();
 	}
+	
+	protected final int remaining() {
+		return this.buffer.remaining();
+	}
+	
+	protected final int position() {
+		return this.buffer.position();
+	}
+	
+	protected final void setPosition(int position) {
+		this.buffer.position(position);
+	}
 
 	protected final void writeString(final String s) {
 		writeShort((short)s.length());

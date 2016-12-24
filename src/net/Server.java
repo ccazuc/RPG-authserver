@@ -31,13 +31,15 @@ public class Server {
 	private static Thread socketThread;
 	private static SocketRunnable socketRunnable;
 
+	private static long LOOP_TICK_TIMER;
+	private final static int TIMEOUT_TIMER = 10000;
 	private final static int PORT = 5725;
 	private final static int LOOP_TIMER = 25;
 	
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InterruptedException {
-		long time = System.currentTimeMillis();
 		float delta;
 		System.out.println("AUTH SERVER");
+		LOOP_TICK_TIMER = System.currentTimeMillis();
 		jdo = new MariaDB("127.0.0.1", 3306, "rpg", "root", "mideas");
 		nonLoggedPlayer = Collections.synchronizedList(nonLoggedPlayer);
 		final InetSocketAddress iNetSocketAdress = new InetSocketAddress(PORT);
@@ -50,13 +52,13 @@ public class Server {
 		socketRunnable = new SocketRunnable(serverSocketChannel);
 		socketThread = new Thread(socketRunnable);
 		socketThread.start();
-		System.out.println("Init took "+(System.currentTimeMillis()-time)+" ms.");
+		System.out.println("Init took "+(System.currentTimeMillis()-LOOP_TICK_TIMER)+" ms.");
 		while(true) {
-			time = System.currentTimeMillis();
+			LOOP_TICK_TIMER = System.currentTimeMillis();
 			kickPlayers();
 			readRealm();
 			readPlayer();
-			delta = System.currentTimeMillis()-time;
+			delta = System.currentTimeMillis()-LOOP_TICK_TIMER;
 			if(delta < LOOP_TIMER) {
 				Thread.sleep(LOOP_TIMER-(long)delta);
 			}
@@ -71,10 +73,9 @@ public class Server {
 	}
 	
 	private static void kickPlayers() {
-		int i = 0;
-		while(i < playerWaitingForKick.size()) {
-			playerList.remove(playerWaitingForKick.get(i));
-			playerWaitingForKick.remove(i);
+		while(playerWaitingForKick.size() > 0) {
+			playerList.remove(playerWaitingForKick.get(0));
+			playerWaitingForKick.remove(0);
 		}
 	}
 	
@@ -88,6 +89,10 @@ public class Server {
 		int i = 0;
 		synchronized(nonLoggedPlayer) {
 			while(i < nonLoggedPlayer.size()) {
+				if(LOOP_TICK_TIMER-nonLoggedPlayer.get(i).getLoggedTimer() > TIMEOUT_TIMER) {
+					nonLoggedPlayer.remove(i);
+					continue;
+				}
 				nonLoggedPlayer.get(i).getConnectionManager().read();
 				i++;
 			}

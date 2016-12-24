@@ -14,9 +14,11 @@ public class Player {
 	private String accountName;
 	private WorldServer server;
 	private boolean isLoggedOnWorldServer;
+	private final long loggedTimer;
 
 	public Player(SocketChannel socket) {
 		this.connectionManager = new ConnectionManager(this, socket);
+		this.loggedTimer = System.currentTimeMillis();
 	}
 	
 	public void close() {
@@ -24,6 +26,10 @@ public class Player {
 		Server.removeNonLoggedPlayer(this);
 		Server.removeLoggedPlayer(this);
 		System.out.println("Removed logged player");
+	}
+	
+	public long getLoggedTimer() {
+		return this.loggedTimer;
 	}
 	
 	public WorldServer getServer() {

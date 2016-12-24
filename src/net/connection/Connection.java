@@ -11,6 +11,7 @@ public class Connection {
 	private Buffer wBuffer;
 	private Buffer rBuffer;
 	private SocketChannel socket;
+	private int startPacketPosition;
 	
 	public Connection(SocketChannel socket, Player player) {
 		this.socket = socket;
@@ -46,6 +47,19 @@ public class Connection {
 		this.rBuffer.clear();
 	}
 	
+	public final void startPacket() {
+		this.startPacketPosition = this.wBuffer.position();
+		writeInt(0);
+	}
+	
+	public final void endPacket() {
+		int position = this.wBuffer.position();
+		this.wBuffer.setPosition(this.startPacketPosition);
+		System.out.println("Packet length "+(position-this.startPacketPosition));
+		this.wBuffer.writeInt(position-this.startPacketPosition);
+		this.wBuffer.setPosition(position);
+	}
+	
 	public final byte read() throws IOException {
 		return this.rBuffer.read();
 	}
@@ -57,6 +71,18 @@ public class Connection {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public final int rBufferRemaining() {
+		return this.rBuffer.remaining();
+	}
+	
+	public final int rBufferPosition() {
+		return this.rBuffer.position();
+	}
+	
+	public final void rBufferSetPosition(int position) {
+		this.rBuffer.setPosition(position);
 	}
 	
 	public final boolean hasRemaining() {
