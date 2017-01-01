@@ -126,4 +126,5 @@ public class PacketID {
 	public final static short IGNORE_REMOVE = 122;
 	public final static short PLAYER_LOGGED_WORLD_SERVER = 123;
 	public final static short WHO = 124;
+	public final static short PLAYER_LOGGED_OUT = 138;
 }

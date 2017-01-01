@@ -48,6 +48,9 @@ public class Connection {
 	}
 	
 	public final void startPacket() {
+		if(this.wBuffer.position() >= 3*this.wBuffer.capacity()/4) {
+			send();
+		}
 		this.startPacketPosition = this.wBuffer.position();
 		writeInt(0);
 	}
@@ -55,7 +58,6 @@ public class Connection {
 	public final void endPacket() {
 		int position = this.wBuffer.position();
 		this.wBuffer.setPosition(this.startPacketPosition);
-		System.out.println("Packet length "+(position-this.startPacketPosition));
 		this.wBuffer.writeInt(position-this.startPacketPosition);
 		this.wBuffer.setPosition(position);
 	}

@@ -34,7 +34,7 @@ public class Server {
 	private static long LOOP_TICK_TIMER;
 	private final static int TIMEOUT_TIMER = 10000;
 	private final static int PORT = 5725;
-	private final static int LOOP_TIMER = 25;
+	private final static int LOOP_TIMER = 15;
 	
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, InterruptedException {
 		float delta;

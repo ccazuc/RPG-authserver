@@ -76,6 +76,10 @@ public class Buffer {
 		return this.buffer.position();
 	}
 	
+	protected final int capacity() {
+		return this.buffer.capacity();
+	}
+	
 	protected final void setPosition(int position) {
 		this.buffer.position(position);
 	}
