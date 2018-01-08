@@ -27,7 +27,8 @@ public class Connection {
 
 	public final void close() {
 		try {
-			this.socket.close();
+			if (this.socket != null)
+				this.socket.close();
 			this.socket = null;
 		} 
 		catch (IOException e) {

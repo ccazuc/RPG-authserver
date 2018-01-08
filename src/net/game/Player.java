@@ -22,7 +22,8 @@ public class Player {
 	}
 	
 	public void close() {
-		this.connectionManager.getConnection().close();
+		if (this.connectionManager.getConnection() != null)
+			this.connectionManager.getConnection().close();
 		Server.removeNonLoggedPlayer(this);
 		Server.removeLoggedPlayer(this);
 		System.out.println("Removed logged player");

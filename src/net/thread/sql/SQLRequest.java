@@ -1,51 +1,53 @@
 package net.thread.sql;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import jdo.JDOStatement;
 import net.Server;
-import net.game.Player;
 
 public class SQLRequest {
 	
 	protected JDOStatement statement;
-	protected int id;
-	protected Player player;
-	protected String userName;
-	protected String password;
+	protected final ArrayList<SQLDatas> datasList;
+	protected final String name;
+	protected final boolean debugActive;
 	
-	public SQLRequest(String request) {
+	public SQLRequest(String request, String name) {
 		try {
 			this.statement = Server.getJDO().prepare(request);
 		} 
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		this.datasList = new ArrayList<SQLDatas>();
+		this.name = name;
+		this.debugActive = true;
 	}
 	
-	public void execute() {
-		gatherData();
-		this.id = 0;
-		this.player = null;
-		this.userName = null;
-		this.password = null;
+	public final void execute() {
+		this.statement.clear();
+		try {
+			gatherData();
+			this.statement.execute();
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		this.datasList.remove(0);
 	}
 	
-	public void setId(int id) {
-		this.id = id;
+	public String getName() {
+		return this.name;
 	}
 	
-	public void setPlayer(Player message) {
-		this.player = message;
+	public boolean debugActive() {
+		return this.debugActive;
 	}
 	
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void addDatas(SQLDatas datas) {
+		this.datasList.add(datas);
 	}
 	
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
-	public void gatherData() {}
+	public void gatherData() throws SQLException {}
 }
