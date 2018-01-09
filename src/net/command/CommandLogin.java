@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import jdo.JDOStatement;
 import net.Server;
+import net.config.ConfigMgr;
 import net.connection.ConnectionManager;
 import net.connection.PacketID;
 import net.game.Player;
@@ -71,7 +72,7 @@ public class CommandLogin extends Command {
 							removeBan(id);
 						}
 					}
-					if(Server.getPlayerList().containsKey(id)) {
+					if(!ConfigMgr.ALLOW_MULTIPLE_LOG && Server.getPlayerList().containsKey(id)) {
 						player.getConnectionManager().getConnection().startPacket();
 						player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 						player.getConnectionManager().getConnection().writeShort(PacketID.ALREADY_LOGGED);
@@ -95,6 +96,7 @@ public class CommandLogin extends Command {
 					Server.removeNonLoggedPlayer(player);
 					Server.addLoggedPlayer(player);
 					System.out.println("LOGIN:LOGIN_ACCEPT");
+					System.out.println("Number online after accept " + Server.getPlayerList().size());
 					return;
 				}
 				player.getConnectionManager().getConnection().startPacket();

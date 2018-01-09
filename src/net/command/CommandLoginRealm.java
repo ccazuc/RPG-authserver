@@ -14,6 +14,7 @@ public class CommandLoginRealm extends Command {
 	public void read() {
 		double key = Math.random();
 		int id = this.connection.readInt();
+		System.out.println("Key generated " + key);
 		if(Server.getRealmList().containsKey(id)) {
 			Server.getRealm(id).getConnectionManager().getConnection().startPacket();
 			Server.getRealm(id).getConnectionManager().getConnection().writeShort(PacketID.LOGIN_REALM);

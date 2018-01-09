@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 
+import net.Server;
 import net.command.Command;
 import net.command.CommandLogin;
 import net.command.CommandLoginRealm;
@@ -85,11 +86,13 @@ public class ConnectionManager {
 	private void readPacket() {
 		while(this.connection != null && this.connection.hasRemaining()) {
 			int packetLength = this.connection.readInt();
+			System.out.println("Packet length : " + packetLength + " logged players : " + Server.getPlayerList().size());
 			if(this.connection.rBufferRemaining()+4 < packetLength) {
 				this.connection.rBufferSetPosition(this.connection.rBufferPosition()-4);
 				return;
 			}
 			short packetId = this.connection.readShort();
+			System.out.println("PacketId : " + packetId);
 			if(this.commandList.containsKey((int)packetId)) {
 				this.lastPacketReaded = packetId;
 				this.commandList.get((int)packetId).read();
