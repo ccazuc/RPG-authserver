@@ -27,7 +27,6 @@ public class Player {
 			this.connectionManager.getConnection().close();
 		Server.removeNonLoggedPlayer(this);
 		Server.removeLoggedPlayer(this);
-		DebugUtils.printStackTrace("removed logged player.");
 		System.out.println("Removed logged player");
 	}
 	

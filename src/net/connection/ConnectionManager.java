@@ -84,7 +84,7 @@ public class ConnectionManager {
 	}
 	
 	private void readPacket() {
-		while(this.connection != null && this.connection.hasRemaining()) {
+		while(this.connection != null && this.connection.hasRemaining() && this.connection.rBufferRemaining() - this.connection.rBufferPosition() >= 4) {
 			int packetLength = this.connection.readInt();
 			System.out.println("Packet length : " + packetLength + " logged players : " + Server.getPlayerList().size());
 			if(this.connection.rBufferRemaining()+4 < packetLength) {
