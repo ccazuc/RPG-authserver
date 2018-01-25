@@ -17,7 +17,7 @@ public class CommandRegisterServer extends Command {
 		int realmID = this.connection.readInt();
 		int port = this.connection.readInt();
 		System.out.println("[New realm registered] "+this.player.getIpAdress()+" "+realmName+" "+realmID);
-		if(this.player.getIpAdress().equals("127.0.0.1")) {
+		if(this.player.getIpAdress().equals("/127.0.0.1")) {
 			WorldServer server = new WorldServer(this.player.getConnectionManager().getConnection().getSocket(), realmID);
 			server.setPort(port);
 			server.setRealmName(realmName);
@@ -25,7 +25,7 @@ public class CommandRegisterServer extends Command {
 			updatePlayerRealmList();
 		}
 		else { //someone's trying to register his own server
-			Server.kickPlayer(this.player.getAccountId());
+			this.player.close();
 		}
 	}
 	

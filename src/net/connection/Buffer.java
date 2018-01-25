@@ -3,7 +3,6 @@ package net.connection;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
 import net.game.Player;
@@ -37,7 +36,7 @@ public class Buffer {
 			}
 		}
 		else {
-			throw new ClosedChannelException();
+			//throw new ClosedChannelException();
 		}
 	}
 

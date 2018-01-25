@@ -41,7 +41,7 @@ public class Connection {
 	}
 	
 	public final String getIpAdress() {
-		return this.socket.socket().getInetAddress().getHostAddress();
+		return this.socket.socket().getInetAddress().toString();
 	}
 	
 	public final void clearRBuffer() {

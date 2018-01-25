@@ -14,7 +14,7 @@ public class CommandLoginRealm extends Command {
 	public void read() {
 		double key = Math.random();
 		int id = this.connection.readInt();
-		System.out.println("Key generated " + key);
+		System.out.println("Key generated " + key + ", ip: " + this.player.getIpAdress());
 		if(Server.getRealmList().containsKey(id)) {
 			Server.getRealm(id).getConnectionManager().getConnection().startPacket();
 			Server.getRealm(id).getConnectionManager().getConnection().writeShort(PacketID.LOGIN_REALM);
@@ -23,6 +23,7 @@ public class CommandLoginRealm extends Command {
 			Server.getRealm(id).getConnectionManager().getConnection().writeInt(this.player.getAccountId());
 			Server.getRealm(id).getConnectionManager().getConnection().writeInt(this.player.getAccountRank());
 			Server.getRealm(id).getConnectionManager().getConnection().writeString(this.player.getAccountName());
+			Server.getRealm(id).getConnectionManager().getConnection().writeString(this.player.getIpAdress());
 			Server.getRealm(id).getConnectionManager().getConnection().endPacket();
 			Server.getRealm(id).getConnectionManager().getConnection().send();
 			this.connection.startPacket();

@@ -72,7 +72,7 @@ public class CommandLogin extends Command {
 							removeBan(id);
 						}
 					}
-					if(!ConfigMgr.ALLOW_MULTIPLE_LOG && Server.getPlayerList().containsKey(id)) {
+					if(Server.getPlayerList().containsKey(id)) {
 						player.getConnectionManager().getConnection().startPacket();
 						player.getConnectionManager().getConnection().writeShort(PacketID.LOGIN);
 						player.getConnectionManager().getConnection().writeShort(PacketID.ALREADY_LOGGED);
